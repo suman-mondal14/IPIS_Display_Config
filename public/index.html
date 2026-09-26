@@ -1,0 +1,692 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Topgrip IPIS - Display Board Configuration & Diagnostics</title>
+  <style>
+    :root {
+      --ir-blue: #003366;
+      --ir-blue-dark: #002244;
+      --ir-blue-light: #0f4c81;
+      --bg-main: #f1f5f9;
+      --bg-card: #ffffff;
+      --border-color: #cbd5e1;
+      --border-light: #e2e8f0;
+      --text-main: #1e293b;
+      --text-muted: #64748b;
+      --text-light: #94a3b8;
+      --badge-green-bg: #dcfce7;
+      --badge-green-text: #166534;
+      --badge-green-border: #86efac;
+      --badge-red-bg: #fee2e2;
+      --badge-red-text: #991b1b;
+      --badge-red-border: #fca5a5;
+      --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: var(--font-family);
+      background-color: var(--bg-main);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Top Navbar */
+    .navbar {
+      background-color: var(--ir-blue);
+      color: #ffffff;
+      padding: 12px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      flex-shrink: 0;
+    }
+
+    .navbar-brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .navbar-title {
+      font-size: 15px;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+    }
+
+    .navbar-badge {
+      font-size: 11px;
+      background-color: rgba(255, 255, 255, 0.18);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      padding: 2px 8px;
+      border-radius: 3px;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+    }
+
+    .navbar-clock {
+      font-size: 13px;
+      font-family: var(--font-mono);
+      font-weight: 600;
+      color: #f8fafc;
+      background-color: rgba(0, 0, 0, 0.2);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      padding: 4px 12px;
+      border-radius: 4px;
+      letter-spacing: 0.05em;
+    }
+
+    /* Main Container - Centered Vertically & Horizontally */
+    .main-container {
+      flex: 1;
+      width: 100%;
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 24px 16px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* Common Card */
+    .card {
+      background-color: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 4px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06), 0 1px 3px rgba(0, 0, 0, 0.08);
+      overflow: hidden;
+      width: 100%;
+    }
+
+    .card-header {
+      background-color: #f8fafc;
+      border-bottom: 1px solid var(--border-color);
+      padding: 14px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .card-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--ir-blue);
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+    }
+
+    .card-body {
+      padding: 24px 20px;
+    }
+
+    /* Alerts / Notifications */
+    .alert {
+      padding: 12px 16px;
+      border-radius: 4px;
+      font-size: 13px;
+      margin-bottom: 20px;
+      display: none;
+      align-items: center;
+      gap: 10px;
+      line-height: 1.4;
+    }
+
+    .alert.alert-error {
+      background-color: var(--badge-red-bg);
+      color: var(--badge-red-text);
+      border: 1px solid var(--badge-red-border);
+    }
+
+    .alert.alert-success {
+      background-color: var(--badge-green-bg);
+      color: var(--badge-green-text);
+      border: 1px solid var(--badge-green-border);
+    }
+
+    /* Form Styles */
+    .form-group {
+      margin-bottom: 18px;
+    }
+
+    .form-label {
+      display: block;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-main);
+      margin-bottom: 6px;
+    }
+
+    .form-control {
+      width: 100%;
+      height: 38px;
+      padding: 8px 12px;
+      font-size: 13.5px;
+      font-family: var(--font-mono);
+      color: var(--text-main);
+      background-color: #ffffff;
+      border: 1px solid var(--border-color);
+      border-radius: 3px;
+      outline: none;
+      transition: border-color 0.15s ease-in-out;
+    }
+
+    .form-control:focus {
+      border-color: var(--ir-blue-light);
+      box-shadow: 0 0 0 2px rgba(15, 76, 129, 0.15);
+    }
+
+    .form-control[readonly] {
+      background-color: #f8fafc;
+      color: var(--text-muted);
+      cursor: not-allowed;
+    }
+
+    /* Buttons */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      height: 38px;
+      padding: 0 16px;
+      font-size: 13px;
+      font-weight: 600;
+      border-radius: 3px;
+      border: 1px solid transparent;
+      cursor: pointer;
+      text-decoration: none;
+      transition: all 0.15s ease;
+    }
+
+    .btn-primary {
+      background-color: var(--ir-blue-light);
+      color: #ffffff;
+      border-color: var(--ir-blue-light);
+    }
+
+    .btn-primary:hover:not(:disabled) {
+      background-color: var(--ir-blue-dark);
+      border-color: var(--ir-blue-dark);
+    }
+
+    .btn-secondary {
+      background-color: #ffffff;
+      color: var(--text-main);
+      border-color: var(--border-color);
+    }
+
+    .btn-secondary:hover:not(:disabled) {
+      background-color: #f8fafc;
+      border-color: #94a3b8;
+    }
+
+    .btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    /* Centered Lock Screen Card */
+    #lockScreen {
+      max-width: 440px;
+      margin: auto;
+    }
+
+    /* Centered Dashboard Screen Card */
+    #dashboardScreen {
+      display: none;
+      max-width: 900px;
+      margin: auto;
+    }
+
+    .grid-form {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+
+    @media (max-width: 650px) {
+      .grid-form {
+        grid-template-columns: 1fr;
+      }
+      .navbar {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+      }
+    }
+
+    /* Data Table / Diagnostic Grid */
+    .data-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+      margin-bottom: 20px;
+    }
+
+    .data-table th,
+    .data-table td {
+      padding: 10px 14px;
+      border: 1px solid var(--border-light);
+      text-align: left;
+    }
+
+    .data-table th {
+      background-color: #f8fafc;
+      font-weight: 600;
+      color: var(--text-muted);
+      width: 35%;
+    }
+
+    .data-table td {
+      font-family: var(--font-mono);
+      color: var(--text-main);
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 2px 8px;
+      font-size: 11px;
+      font-weight: 700;
+      border-radius: 3px;
+      letter-spacing: 0.02em;
+    }
+
+    .badge-pass {
+      background-color: var(--badge-green-bg);
+      color: var(--badge-green-text);
+      border: 1px solid var(--badge-green-border);
+    }
+
+    .badge-fail {
+      background-color: var(--badge-red-bg);
+      color: var(--badge-red-text);
+      border: 1px solid var(--badge-red-border);
+    }
+
+    .badge-neutral {
+      background-color: #f1f5f9;
+      color: var(--text-muted);
+      border: 1px solid var(--border-color);
+    }
+
+    .action-row {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 10px;
+      padding-top: 16px;
+      border-top: 1px solid var(--border-light);
+    }
+
+    /* Footer */
+    .footer {
+      background-color: #ffffff;
+      border-top: 1px solid var(--border-color);
+      padding: 12px 24px;
+      text-align: center;
+      font-size: 11.5px;
+      color: var(--text-muted);
+      font-family: var(--font-mono);
+      flex-shrink: 0;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Navigation Bar -->
+  <header class="navbar">
+    <div class="navbar-brand">
+      <span class="navbar-title">TOPGRIP IPIS DISPLAY CONFIGURATION & DIAGNOSTICS</span>
+      <span class="navbar-badge">RDSO SPN/TC/108</span>
+    </div>
+    <!-- Live Real-Time Date & Time Display -->
+    <div class="navbar-clock" id="liveDateTime">
+      --/--/---- --:--:--
+    </div>
+  </header>
+
+  <!-- Main Content Area (Centered Vertically and Horizontally) -->
+  <main class="main-container">
+
+    <!-- VIEW 1: OEM LOCK SCREEN (Centered Container) -->
+    <section id="lockScreen" class="card">
+      <div class="card-header">
+        <span class="card-title">OEM Security Authentication</span>
+      </div>
+      <div class="card-body">
+        
+        <div id="loginAlert" class="alert alert-error">
+          <span id="loginAlertMsg">Invalid OEM Password! Access Denied.</span>
+        </div>
+
+        <form id="loginForm" onsubmit="handleLogin(event)">
+          <div class="form-group">
+            <label class="form-label" for="adminPassword">Master OEM Password</label>
+            <input 
+              type="password" 
+              id="adminPassword" 
+              class="form-control" 
+              placeholder="Enter administrator password" 
+              required 
+              autocomplete="current-password"
+              autofocus
+            >
+          </div>
+
+          <button type="submit" id="loginBtn" class="btn btn-primary" style="width: 100%;">
+            Unlock Configuration Terminal
+          </button>
+        </form>
+      </div>
+    </section>
+
+    <!-- VIEW 2: AUTHENTICATED DIAGNOSTIC DASHBOARD (Centered Container) -->
+    <section id="dashboardScreen" class="card">
+      <div class="card-header">
+        <span class="card-title">Display Board Configuration & Status</span>
+        <div>
+          <button type="button" onclick="loadBoardInfo()" class="btn btn-secondary" style="height:30px;padding:0 10px;font-size:12px;">
+            Refresh Status
+          </button>
+          <button type="button" onclick="handleLogout()" class="btn btn-secondary" style="height:30px;padding:0 10px;font-size:12px;margin-left:6px;">
+            Logout
+          </button>
+        </div>
+      </div>
+      <div class="card-body">
+
+        <div id="dashAlert" class="alert">
+          <span id="dashAlertMsg"></span>
+        </div>
+
+        <form id="configForm" onsubmit="handleSaveConfig(event)">
+          <div class="grid-form">
+            <!-- Left Column: Config Inputs -->
+            <div>
+              <div class="form-group">
+                <label class="form-label">Board Type (Read-Only)</label>
+                <input type="text" id="boardType" class="form-control" readonly value="PDBD">
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="platformNo">Assigned Platform Number</label>
+                <input type="text" id="platformNo" class="form-control" placeholder="e.g. 1" required>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="boardIp">Board IPv4 Address</label>
+                <input 
+                  type="text" 
+                  id="boardIp" 
+                  class="form-control" 
+                  placeholder="10.x.x.x" 
+                  pattern="^((25[0-5]|(2[0-4]|1\d|[1-9]|)\d)(\.(?!$)|$)){4}$"
+                  required
+                >
+              </div>
+            </div>
+
+            <!-- Right Column: Diagnostics & Telemetry -->
+            <div>
+              <table class="data-table">
+                <tbody>
+                  <tr>
+                    <th>LED Test Status</th>
+                    <td>
+                      <span id="ledStatusBadge" class="badge badge-pass">PASS</span>
+                    </td>
+                  </tr>
+                  <tr>
+                    <th>Last Test Time</th>
+                    <td id="lastTestTimeDisplay">-</td>
+                  </tr>
+                  <tr>
+                    <th>CDC Master Sync</th>
+                    <td id="cdcSyncStatusDisplay">-</td>
+                  </tr>
+                  <tr>
+                    <th>Active Network IP</th>
+                    <td id="networkDetectedIpDisplay">-</td>
+                  </tr>
+                  <tr>
+                    <th>System Uptime</th>
+                    <td id="uptimeDisplay">0s</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="action-row">
+            <button type="submit" id="saveBtn" class="btn btn-primary">
+              Save Configuration
+            </button>
+          </div>
+        </form>
+
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Industrial Footer -->
+  <footer class="footer">
+    RDSO Specification SPN/TC/108/2021 | Topgrip IPIS Embedded Controller Subsystem
+  </footer>
+
+  <script>
+    let sessionPassword = '';
+    let uptimeSeconds = 0;
+    let uptimeInterval = null;
+
+    // Real-Time Date & Time Clock in Header
+    function updateClock() {
+      const now = new Date();
+      const day = String(now.getDate()).padStart(2, '0');
+      const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+      const month = monthNames[now.getMonth()];
+      const year = now.getFullYear();
+      const hours = String(now.getHours()).padStart(2, '0');
+      const minutes = String(now.getMinutes()).padStart(2, '0');
+      const seconds = String(now.getSeconds()).padStart(2, '0');
+      
+      const clockElem = document.getElementById('liveDateTime');
+      if (clockElem) {
+        clockElem.textContent = `${day}-${month}-${year} ${hours}:${minutes}:${seconds}`;
+      }
+    }
+    setInterval(updateClock, 1000);
+    updateClock();
+
+    // Show Alert Banner
+    function showAlert(elementId, msgId, message, type = 'error') {
+      const alertBox = document.getElementById(elementId);
+      const msgElem = document.getElementById(msgId);
+      msgElem.textContent = message;
+      alertBox.className = `alert alert-${type}`;
+      alertBox.style.display = 'flex';
+    }
+
+    function hideAlert(elementId) {
+      const alertBox = document.getElementById(elementId);
+      alertBox.style.display = 'none';
+    }
+
+    // Format Uptime
+    function formatUptime(seconds) {
+      const hrs = Math.floor(seconds / 3600);
+      const mins = Math.floor((seconds % 3600) / 60);
+      const secs = seconds % 60;
+      if (hrs > 0) return `${hrs}h ${mins}m ${secs}s`;
+      if (mins > 0) return `${mins}m ${secs}s`;
+      return `${secs}s`;
+    }
+
+    // Handle Login
+    async function handleLogin(e) {
+      e.preventDefault();
+      hideAlert('loginAlert');
+      
+      const passwordInput = document.getElementById('adminPassword');
+      const loginBtn = document.getElementById('loginBtn');
+      const password = passwordInput.value;
+
+      loginBtn.disabled = true;
+      loginBtn.textContent = 'Verifying...';
+
+      try {
+        const res = await fetch('/api/verify-login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ password })
+        });
+
+        const data = await res.json();
+
+        if (res.ok && data.success) {
+          sessionPassword = password;
+          document.getElementById('lockScreen').style.display = 'none';
+          document.getElementById('dashboardScreen').style.display = 'block';
+          await loadBoardInfo();
+        } else {
+          showAlert('loginAlert', 'loginAlertMsg', data.message || 'Invalid OEM Password! Access Denied.', 'error');
+        }
+      } catch (err) {
+        showAlert('loginAlert', 'loginAlertMsg', 'Connection error: ' + err.message, 'error');
+      } finally {
+        loginBtn.disabled = false;
+        loginBtn.textContent = 'Unlock Configuration Terminal';
+      }
+    }
+
+    // Load Board Info
+    async function loadBoardInfo() {
+      try {
+        const res = await fetch('/api/board-info');
+        const data = await res.json();
+
+        if (res.ok) {
+          document.getElementById('boardType').value = data.boardType || 'PDBD';
+          document.getElementById('platformNo').value = data.platformNo || '1';
+          document.getElementById('boardIp').value = data.boardIp || '';
+
+          // LED Test status badge
+          const ledBadge = document.getElementById('ledStatusBadge');
+          const testStatus = (data.lastTestStatus || '').toUpperCase();
+          if (testStatus.includes('PASS') || testStatus.includes('OK')) {
+            ledBadge.className = 'badge badge-pass';
+            ledBadge.textContent = data.lastTestStatus;
+          } else if (testStatus.includes('FAIL') || testStatus.includes('ERROR')) {
+            ledBadge.className = 'badge badge-fail';
+            ledBadge.textContent = data.lastTestStatus;
+          } else {
+            ledBadge.className = 'badge badge-neutral';
+            ledBadge.textContent = data.lastTestStatus || 'UNKNOWN';
+          }
+
+          document.getElementById('lastTestTimeDisplay').textContent = data.lastTestTime || 'N/A';
+          document.getElementById('cdcSyncStatusDisplay').textContent = data.cdcSyncStatus || 'STANDALONE';
+          document.getElementById('networkDetectedIpDisplay').textContent = data.networkDetectedIp || '127.0.0.1';
+
+          uptimeSeconds = data.uptime || 0;
+          document.getElementById('uptimeDisplay').textContent = formatUptime(uptimeSeconds);
+
+          if (uptimeInterval) clearInterval(uptimeInterval);
+          uptimeInterval = setInterval(() => {
+            uptimeSeconds++;
+            document.getElementById('uptimeDisplay').textContent = formatUptime(uptimeSeconds);
+          }, 1000);
+        } else {
+          showAlert('dashAlert', 'dashAlertMsg', 'Failed to retrieve board telemetry.', 'error');
+        }
+      } catch (err) {
+        showAlert('dashAlert', 'dashAlertMsg', 'Telemetry communication error: ' + err.message, 'error');
+      }
+    }
+
+    // Save Configuration
+    async function handleSaveConfig(e) {
+      e.preventDefault();
+      hideAlert('dashAlert');
+
+      const saveBtn = document.getElementById('saveBtn');
+      const platformNo = document.getElementById('platformNo').value.trim();
+      const boardIp = document.getElementById('boardIp').value.trim();
+
+      saveBtn.disabled = true;
+      saveBtn.textContent = 'Saving...';
+
+      try {
+        const res = await fetch('/api/save-config', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            platformNo,
+            boardIp,
+            password: sessionPassword
+          })
+        });
+
+        const data = await res.json();
+
+        if (res.ok && data.success) {
+          if (data.ipChanged) {
+            let countdown = 5;
+            const targetPort = window.location.port ? `:${window.location.port}` : '';
+            const targetUrl = `http://${data.newIp}${targetPort}`;
+
+            showAlert('dashAlert', 'dashAlertMsg', `IP Address updated to ${data.newIp}! Redirecting in ${countdown} seconds...`, 'success');
+
+            const countdownTimer = setInterval(() => {
+              countdown--;
+              if (countdown > 0) {
+                showAlert('dashAlert', 'dashAlertMsg', `IP Address updated to ${data.newIp}! Redirecting in ${countdown} seconds...`, 'success');
+              } else {
+                clearInterval(countdownTimer);
+                showAlert('dashAlert', 'dashAlertMsg', `Redirecting now to ${targetUrl}...`, 'success');
+                window.location.href = targetUrl;
+              }
+            }, 1000);
+          } else {
+            showAlert('dashAlert', 'dashAlertMsg', data.message || 'Configuration updated successfully.', 'success');
+            loadBoardInfo();
+            saveBtn.disabled = false;
+            saveBtn.textContent = 'Save Configuration';
+          }
+        } else {
+          showAlert('dashAlert', 'dashAlertMsg', data.message || 'Failed to save configuration.', 'error');
+          saveBtn.disabled = false;
+          saveBtn.textContent = 'Save Configuration';
+        }
+      } catch (err) {
+        showAlert('dashAlert', 'dashAlertMsg', 'Connection error: ' + err.message, 'error');
+        saveBtn.disabled = false;
+        saveBtn.textContent = 'Save Configuration';
+      }
+    }
+
+    // Logout
+    function handleLogout() {
+      sessionPassword = '';
+      if (uptimeInterval) clearInterval(uptimeInterval);
+      document.getElementById('adminPassword').value = '';
+      hideAlert('loginAlert');
+      hideAlert('dashAlert');
+      document.getElementById('dashboardScreen').style.display = 'none';
+      document.getElementById('lockScreen').style.display = 'block';
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,23 @@
+{
+  "name": "ipis-display-config",
+  "version": "1.0.0",
+  "description": "Embedded Configuration & Diagnostic Webserver for IPIS Display Boards (RDSO SPN/TC/108 Compliant)",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "axios": "^1.7.9",
+    "bcryptjs": "^2.4.3",
+    "express": "^4.21.2"
+  },
+  "keywords": [
+    "ipis",
+    "topgrip",
+    "rdso",
+    "display-board",
+    "embedded"
+  ],
+  "author": "Topgrip IPIS Systems",
+  "license": "ISC"
+}
